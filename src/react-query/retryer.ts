@@ -28,16 +28,14 @@ export function createRetryer<TData = unknown, TError = unknown>(
     }
   };
 
-  // Create loop function
+  // Execute query
   const run = () => {
-    // Do nothing if already resolved
     if (isResolved) {
       return;
     }
 
     let promiseOrValue: any;
 
-    // Execute query
     try {
       promiseOrValue = config.fn();
     } catch (error) {
@@ -47,17 +45,13 @@ export function createRetryer<TData = unknown, TError = unknown>(
     Promise.resolve(promiseOrValue)
       .then(resolve)
       .catch((error) => {
-        // Stop if the fetch is already resolved
         if (isResolved) {
           return;
         }
-
-        // Do we need to retry the request?
         reject(error);
       });
   };
 
-  // Start loop
   run();
 
   return {
